@@ -1,6 +1,9 @@
-﻿using BrewUp.Sales.Domain;
-using BrewUp.Sales.ReadModel;
+﻿using Azure.Messaging.ServiceBus;
 using BrewUp.Sales.Services;
+using BrewUp.Shared;
+using BrewUp.Shared.Commands;
+using BrewUp.Shared.Models;
+using System.Text.Json;
 
 namespace BrewUp.Sales.Modules
 {
@@ -11,12 +14,9 @@ namespace BrewUp.Sales.Modules
 
 		public IServiceCollection RegisterModule(WebApplicationBuilder builder)
 		{
-			AzureServiceBusConfiguration config = new (
-				builder.Configuration["BrewUp:AzureServiceBus:ConnectionString"]!,
-				"createsalesorder", "sales");
+			builder.Services.AddShared();
+			builder.Services.AddHostedService<SalesReadModelWorker>();
 			builder.Services.AddScoped<SalesService>();
-			builder.Services.AddSalesDomain(config);
-			builder.Services.AddSalesReadModel(config);
 
 			return builder.Services;
 		}
@@ -25,31 +25,63 @@ namespace BrewUp.Sales.Modules
 		{
 			var salesGroup = endpoints.MapGroup("sales")
 				.WithTags("Sales");
-			
-			salesGroup.MapPost("", CreateSaleOrdersAsync)
-				.Produces(StatusCodes.Status202Accepted)
-				.ProducesValidationProblem()
-				.WithName("CreateSaleOrder");
-			
+
 			salesGroup.MapGet("", GetSaleOrdersAsync)
 				.Produces(StatusCodes.Status202Accepted)
 				.ProducesValidationProblem()
-				.WithName("GetSaleOrders");
+				.WithName("GetSaleOrders")
+				.WithTags("Sales");
+
+			salesGroup.MapPost("", HandleCreateSalesOrderAsync);
 
 			return endpoints;
-		}
-
-		private static async Task<IResult> CreateSaleOrdersAsync(SalesService salesService)
-		{
-			var orderId = await salesService.CreateSalesOrderAsync();
-			
-			return Results.Created("", orderId);
 		}
 
 		private static async Task<IResult> GetSaleOrdersAsync(SalesService salesService)
 		{
 			var salesOrder = await salesService.GetSaleOrdersAsync();
 			return Results.Ok(salesOrder);
+		}
+
+		private static async Task<IResult> HandleCreateSalesOrderAsync(
+			SalesOrder body,
+			ServiceBusClient serviceBusClient)
+		{
+			var sender = serviceBusClient.CreateSender("createsalesorder");
+
+			body = body with
+			{
+				OrderId = Guid.NewGuid(),
+				CustomerName = "Il Grottino del Muflone",
+				OrderNumber = GetSalesOrderNumber(),
+				TotalAmount = GetSalesOrderTotalAmount()
+			};
+
+			// Create a command
+			CreateSalesOrder command = new(body.OrderId.ToString(), body.OrderNumber,
+				body.CustomerId.ToString(), body.CustomerName,
+				DateTime.UtcNow,
+				body.TotalAmount, "EUR");
+
+			await sender.SendMessageAsync(new ServiceBusMessage(JsonSerializer.Serialize(command)), CancellationToken.None);
+
+			Console.WriteLine($"SalesOrder number {command.OrderNumber} has been sent");
+
+			return Results.Accepted();
+		}
+
+		private static string GetSalesOrderNumber()
+		{
+			var reference = DateTime.UtcNow;
+			return
+				$"{reference.Year:0000}{reference.Month:00}{reference.Day:00}-{reference.Hour:00}{reference.Minute:00}{reference.Second:00}";
+		}
+
+		private static decimal GetSalesOrderTotalAmount()
+		{
+			var random = new Random(200);
+			var totalAmount = random.Next(1000, 10000);
+			return totalAmount + DateTime.UtcNow.Second;
 		}
 	}
 }

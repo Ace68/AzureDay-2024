@@ -2,10 +2,19 @@ using BrewUp.Sales.Modules;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+builder.AddAzureServiceBusClient("ServiceBusConnection");
+
+builder.Services.AddProblemDetails();
+
 // Register Modules
 builder.RegisterModules();
 
 var app = builder.Build();
+
+app.UseExceptionHandler();
+
+app.MapDefaultEndpoints();
 
 app.UseCors("CorsPolicy");
 
@@ -26,4 +35,4 @@ app.UseSwaggerUI(s =>
 	s.RoutePrefix = "documentation";
 });
 
-app.Run();
+await app.RunAsync();

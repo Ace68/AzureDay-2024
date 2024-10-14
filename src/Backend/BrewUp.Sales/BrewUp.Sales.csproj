@@ -9,6 +9,7 @@
   </PropertyGroup>
 
 	<ItemGroup>
+    <PackageReference Include="Aspire.Azure.Messaging.ServiceBus" Version="8.2.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.4" />
@@ -26,9 +27,8 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\..\BrewUp.Shared\BrewUp.Shared.csproj" />
-	  <ProjectReference Include="..\BrewUp.Sales.Domain\BrewUp.Sales.Domain.csproj" />
+	  <ProjectReference Include="..\..\BrewUpAspire.ServiceDefaults\BrewUpAspire.ServiceDefaults.csproj" />
 	  <ProjectReference Include="..\BrewUp.Sales.ReadModel\BrewUp.Sales.ReadModel.csproj" />
-	  <ProjectReference Include="..\BrewUp.Sales.Shared\BrewUp.Sales.Shared.csproj" />
 	</ItemGroup>
 
 </Project>
