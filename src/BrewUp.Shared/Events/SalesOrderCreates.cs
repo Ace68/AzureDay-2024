@@ -1,8 +1,8 @@
 using BrewUp.Shared.Models;
 
-namespace BrewUp.Shared.Commands;
+namespace BrewUp.Shared.Events;
 
-public class CreateSalesOrder(
+public class SalesOrderCreated(
     Guid salesOrderId,
     string salesOrderNumber,
     Guid customerId,

@@ -1,20 +1,28 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-BrewUp.Sales.ReadModel-9bd0f7cd-c9ca-467f-bca8-8c5c0fc0ac8e</UserSecretsId>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Aspire.Azure.Messaging.ServiceBus" Version="8.2.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.29.0" />
+    <PackageReference Include="Muflone" Version="8.1.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\BrewUp.Shared\BrewUp.Shared.csproj" />
-    <ProjectReference Include="..\..\BrewUpAspire.ServiceDefaults\BrewUpAspire.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\BrewUp.Sales.Messages\BrewUp.Sales.Messages.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="BrewUp.Shared">
+      <HintPath>..\BrewUp.Sales.Infrastructures\bin\Debug\net8.0\BrewUp.Shared.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Queries\" />
+  </ItemGroup>
+
 </Project>

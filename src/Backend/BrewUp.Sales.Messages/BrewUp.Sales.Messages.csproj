@@ -8,10 +8,12 @@
 
   <ItemGroup>
     <PackageReference Include="Muflone" Version="8.1.2" />
+    <PackageReference Include="Muflone.Transport.RabbitMQ" Version="8.1.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BrewUp.Sales.Messages\BrewUp.Sales.Messages.csproj" />
+    <ProjectReference Include="..\..\BrewUp.Shared\BrewUp.Shared.csproj" />
+    <ProjectReference Include="..\BrewUp.Sales.SharedKernel\BrewUp.Sales.SharedKernel.csproj" />
   </ItemGroup>
 
 </Project>
