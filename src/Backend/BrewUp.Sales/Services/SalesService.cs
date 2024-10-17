@@ -5,8 +5,7 @@ using BrewUp.Shared.Models;
 
 namespace BrewUp.Sales.Services;
 
-public class SalesService(AzureServiceBusConfiguration azureServiceBusConfiguration,
-	AzureServiceBus serviceBus)
+public class SalesService(AzureServiceBus serviceBus)
 {
 	public async Task<IEnumerable<SalesOrder>> GetSaleOrdersAsync()
 	{
