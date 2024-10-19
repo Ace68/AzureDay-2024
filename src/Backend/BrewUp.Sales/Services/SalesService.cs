@@ -59,6 +59,6 @@ public class SalesService(AzureServiceBus serviceBus)
 		var command = await BrewUpSerializer.SerializeAsync(salesOrderCommand);
 		await serviceBus.SendAsync(command).ConfigureAwait(false);
 		
-		return await Task.FromResult(salesOrder.ToString());
+		return salesOrder.ToString();
 	}
 }
